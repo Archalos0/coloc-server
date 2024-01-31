@@ -6,8 +6,9 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react"
   },
-  "include": ["src/**/*.tsx", "src/index.tsx"],
+  "include": ["src/**/*.tsx", "src/index.tsx", "src/controllers/user-controller.ts"],
   "exclude": ["node_modules"]
 }

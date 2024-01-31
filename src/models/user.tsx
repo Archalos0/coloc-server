@@ -4,7 +4,7 @@ enum Role {
     ROOMMATE
 }
 
-interface User {
+export default interface User {
     ID : number
     phoneNumber : string
     email : string
@@ -21,3 +21,4 @@ interface User {
     fridge ?: Article[]
     privateInbox ?: Inbox
 }
+
