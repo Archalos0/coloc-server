@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  //previewFeatures = ["driverAdapters"] /* Si j'utilise un driver postgresql externe à prisma */  
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:1234@51.178.45.24:5432/coloc?schema=public" //env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  ROOMMATE
+}
+
+model User {
+  ID          Int       @id @default(autoincrement())
+  email       String
+  firstName   String
+  password    String
+  role        Role      @default(ROOMMATE)
+  phoneNumber String?
+  lastName    String?
+  birthday    DateTime? @db.Date
+  photo       Bytes?
+  description String?
+
+  houseOwned House? @relation(name: "HouseOwner")
+
+  bedroom Bedroom? @relation(name: "RentedBy")
+
+  // shopping_list   ShoppingList
+  // fridge          Fridge
+  // private_inbox   Inbox
+
+  //bedroom    Bedroom?
+}
+
+model House {
+  ID Int @id @default(autoincrement())
+
+  owner   User? @relation(name: "HouseOwner", fields: [ownerID], references: [ID])
+  ownerID Int?  @unique
+
+  bedrooms Bedroom[] @relation(name: "BedroomOfHouse")
+}
+
+model Bedroom {
+  ID         Int     @id @default(autoincrement())
+  price      Decimal
+  size       Decimal
+  isEquipped Boolean @default(false)
+
+  occupant   User? @relation(name: "RentedBy", fields: [occupantID], references: [ID])
+  occupantID Int?  @unique
+
+  house   House @relation(name: "BedroomOfHouse", fields: [houseID], references: [ID])
+  houseID Int
+}
