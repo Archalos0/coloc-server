@@ -1,37 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { House } from './interfaces/house.interface';
-import prisma from '../database';
+// import prisma from '../prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaError } from 'src/utils';
+import { PrismaService } from 'src/prisma.service';
+import { Prisma, House, User } from '@prisma/client';
 
 @Injectable()
 export class HousesService {
+  constructor(private prisma: PrismaService) { }
 
-  async findOneByID(houseID: number) {
+  async findOne(houseWhereUniqueInput: Prisma.HouseWhereUniqueInput): Promise<House | null> {
     try {
-      const house = await prisma.house.findUnique({
-        where: {
-          ID: houseID
-        }
-      })
+      const house = await this.prisma.house.findUnique({ where: houseWhereUniqueInput })
       return house
     } catch (error: any) {
-      throw new Error(error)
+      throw error
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<House[]> {
     try {
-      const houses = await prisma.house.findMany()
+      const houses = await this.prisma.house.findMany()
       return houses
     } catch (error: any) {
-      throw new Error(error)
+      throw error
     }
   }
 
-  async findAllOccupants(houseID: number) {
+  async findAllOccupants(houseID: number): Promise<User[]> {
     try {
-      const occupants = await prisma.user.findMany({
+      const occupants = await this.prisma.user.findMany({
         where: {
           bedroom: {
             houseID: houseID
@@ -41,48 +39,36 @@ export class HousesService {
       return occupants
     } catch (error: any) {
       console.log(error)
-      throw new Error(error)
+      throw error
     }
   }
 
-  async create(house: any) {
+  async create(data: Prisma.HouseCreateInput): Promise<House> {
     try {
-      const houseCreated = await prisma.house.create({ data: house })
+      const houseCreated = await this.prisma.house.create({ data })
       return houseCreated
     } catch (error: any) {
       console.log(error)
-      throw new Error(error)
+      throw error
     }
   }
 
-
-  
-  async update(houseID: number, dataHouse: any) {
+  async update(where: Prisma.HouseWhereUniqueInput, data: Prisma.HouseUpdateInput): Promise<House> {
     try {
-      const updatedUser = await prisma.house.update({
-        where: {
-          ID: houseID
-        },
-        data: dataHouse
-      })
-      
+      const updatedUser = await this.prisma.house.update({ where, data })
       return updatedUser
     } catch (error: any) {
-      throw new Error(error)
+      throw error
     }
   }
-  
-  async delete(houseID: number) {
+
+  async delete(where: Prisma.HouseWhereUniqueInput) {
     try {
-      const deletedUser = await prisma.house.delete({
-        where: {
-          ID: houseID
-        }
-      })
-  
+      const deletedUser = await this.prisma.house.delete({ where })
+
       return deletedUser
     } catch (error) {
-      throw new Error(error)
+      throw error
     }
   }
 }

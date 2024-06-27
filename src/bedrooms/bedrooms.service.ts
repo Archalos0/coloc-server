@@ -1,69 +1,56 @@
 import { Injectable } from '@nestjs/common';
-import prisma from '../database';
+import { PrismaService } from '../prisma.service';
+import { Prisma, Bedroom } from '@prisma/client';
 
 @Injectable()
 export class BedroomsService {
-    
-    async findOneByID(bedroomID: number) {
-        try {
-            const bedroom = await prisma.bedroom.findUnique({
-                where: {
-                    ID: bedroomID
-                }
-            })
 
+    constructor(private prisma: PrismaService) { }
+
+    async findOne(where: Prisma.BedroomWhereUniqueInput): Promise<Bedroom | null> {
+        try {
+            const bedroom = await this.prisma.bedroom.findUnique({ where })
             return bedroom
         } catch (error: any) {
-            throw new Error(error)
+            throw error
         }
     }
 
     async findAll() {
         try {
-            const bedrooms = await prisma.bedroom.findMany()
-
+            const bedrooms = await this.prisma.bedroom.findMany()
             return bedrooms
         } catch (error: any) {
-            throw new Error(error)
+            throw error
         }
     }
 
-    async create(dataBedroom: any) {
+    async create(data: Prisma.BedroomCreateInput) {
         try {
-            const createdBedroom = await prisma.bedroom.create({data : dataBedroom})
+            const createdBedroom = await this.prisma.bedroom.create({ data })
             return createdBedroom
-        } catch(error: any) {
-            throw new Error(error)
+        } catch (error: any) {
+            console.log(error)
+            throw error
         }
     }
 
 
-    async update(bedroomID: number, dataBedroom: any) {
+    async update(where: Prisma.BedroomWhereUniqueInput, data: Prisma.BedroomUpdateInput) {
         try {
-            const updatedBedroom = await prisma.bedroom.update({
-                where: {
-                    ID: bedroomID
-                },
-                data : dataBedroom
-            })
-
+            const updatedBedroom = await this.prisma.bedroom.update({ where, data })
             return updatedBedroom
         } catch (error: any) {
-            throw new Error(error)
+            throw error
         }
     }
 
-    async delete(bedroomID: number) {
+    async delete(where: Prisma.BedroomWhereUniqueInput) {
         try {
-            const deletedBedroom = await prisma.bedroom.delete({
-                where: {
-                    ID: bedroomID
-                }
-            })
-
+            const deletedBedroom = await this.prisma.bedroom.delete({ where })
             return deletedBedroom
         } catch (error: any) {
-            throw new Error(error)
+            throw error
         }
     }
 

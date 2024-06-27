@@ -25,19 +25,18 @@ model User {
   role        Role      @default(ROOMMATE)
   phoneNumber String?
   lastName    String?
-  birthday    DateTime? @db.Date
+  birthday    DateTime? @db.Date()
   photo       Bytes?
   description String?
 
-  houseOwned House? @relation(name: "HouseOwner")
+  houseOwned House?   @relation(name: "HouseOwner")
+  bedroom    Bedroom? @relation(name: "RentedBy")
 
-  bedroom Bedroom? @relation(name: "RentedBy")
-
-  // shopping_list   ShoppingList
   // fridge          Fridge
   // private_inbox   Inbox
 
-  //bedroom    Bedroom?
+  HouseShoppingList      HouseShoppingList[]
+  PersonnalShoppiingList PersonnalShoppingList[]
 }
 
 model House {
@@ -46,7 +45,8 @@ model House {
   owner   User? @relation(name: "HouseOwner", fields: [ownerID], references: [ID])
   ownerID Int?  @unique
 
-  bedrooms Bedroom[] @relation(name: "BedroomOfHouse")
+  bedrooms          Bedroom[]           @relation(name: "BedroomOfHouse")
+  HouseShoppingList HouseShoppingList[]
 }
 
 model Bedroom {
@@ -61,3 +61,58 @@ model Bedroom {
   house   House @relation(name: "BedroomOfHouse", fields: [houseID], references: [ID])
   houseID Int
 }
+
+enum TypeArticle {
+  FOOD
+  DRINK
+  HEALTH_CARE
+  UTENSIL
+  TOOL
+  HOUSEHOLD_PRODUCT
+  OTHER
+}
+
+model HouseShoppingList {
+  ID Int @id @default(autoincrement())
+
+  house   House @relation(fields: [houseID], references: [ID])
+  houseID Int
+
+  buyer   User? @relation(fields: [buyerID], references: [ID])
+  buyerID Int?
+
+  article   ArticleToBuy @relation(fields: [articleID], references: [ID])
+  articleID Int
+}
+
+model PersonnalShoppingList {
+  ID Int @id @default(autoincrement())
+
+  buyer   User? @relation(fields: [buyerID], references: [ID])
+  buyerID Int?
+
+  article   ArticleToBuy @relation(fields: [articleID], references: [ID])
+  articleID Int
+}
+
+model ArticleToBuy {
+  ID          Int         @id @default(autoincrement())
+  type        TypeArticle @default(OTHER)
+  name        String
+  description String?
+  photo       String?
+  isBuy       Boolean     @default(false)
+  quantity    Int?
+
+  HouseShoppingList      HouseShoppingList[]
+  PersonnalShoppiingList PersonnalShoppingList[]
+}
+
+// model Article {
+//   ID   Int         @id @default(autoincrement())
+//   type TypeArticle @default(OTHER)
+//   name String
+
+//   description String?
+//   photo       String?
+// }

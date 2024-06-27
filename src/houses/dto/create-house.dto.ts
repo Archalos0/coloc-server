@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { Prisma } from '@prisma/client';
+import { IsInt, IsObject, IsOptional } from 'class-validator';
 
 export class CreateHouseDto {
   @ApiProperty()
   @IsOptional()
-  ownerID?: number;
+  @IsObject()
+  ownerID?: Prisma.UserCreateNestedOneWithoutHouseOwnedInput;
 }

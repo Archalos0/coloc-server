@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { Prisma } from '@prisma/client';
+import { IsBoolean, IsDecimal, IsInt, IsNotEmpty, IsNumber, IsObject, IsOptional } from 'class-validator';
 
 
 export class UpdateBedroomDto {
@@ -7,30 +8,35 @@ export class UpdateBedroomDto {
         required: true
     })
     @IsOptional()
+    @IsNumber()
     price?: number;
 
     @ApiProperty({
         required: true
     })
     @IsOptional()
+    @IsInt()
     size?: number;
 
     @ApiProperty({
         required: true
     })
     @IsOptional()
-    houseID?: number;
+    @IsObject()
+    house?: Prisma.HouseCreateNestedOneWithoutBedroomsInput;
 
     @ApiProperty({
         required: false,
         default: true
     })
     @IsOptional()
+    @IsBoolean()
     isEquipped?: Boolean;
 
     @ApiProperty({
         required: false
     })
     @IsOptional()
-    occupantID?: number;
+    @IsObject()
+    occupant?: Prisma.UserCreateNestedOneWithoutBedroomInput;
 }

@@ -1,72 +1,54 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './interfaces/user.interface';
-import prisma from '../database';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from '../prisma.service';
+import { Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
 
-  async findOneByID(userID: number) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          ID: userID
-        }
-      })
+  constructor(private prisma: PrismaService) { }
 
+  async findOne(userWhereUniqueInput: Prisma.UserWhereUniqueInput): Promise<User | null> {
+    try {
+      const user: User = await this.prisma.user.findUnique({ where: userWhereUniqueInput })
       return user
     } catch (error: any) {
-      throw new Error(error)
+      throw error
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<User[]> {
     try {
-      const users = await prisma.user.findMany()
+      const users: User[] = await this.prisma.user.findMany()
       return users
-
     } catch (error: any) {
-      console.log(error)
-      throw new Error(error)
+      throw error
     }
   }
 
-  async create(user: any) {
+  async create(data: Prisma.UserCreateInput): Promise<User> {
     try {
-      const userCreated = await prisma.user.create({ data: user })
+      const userCreated: User = await this.prisma.user.create({ data })
       return userCreated
     } catch (error: any) {
-      console.log(error)
-      throw new Error(error)
+      throw error
     }
   }
 
-  async update(userID: number, dataUser: any) {
+  async update(where: Prisma.UserWhereUniqueInput, data: Prisma.UserUpdateInput) {
     try {
-      const updatedUser = await prisma.user.update({ 
-        where: {
-          ID: userID
-        },
-        data: dataUser 
-      })
-
-      return updatedUser
+      const userUpdated: User = await this.prisma.user.update({ where, data })
+      return userUpdated
     } catch (error: any) {
-      throw new Error(error)
+      throw error
     }
   }
 
-  async delete(userID: number){
+  async delete(where: Prisma.UserWhereUniqueInput): Promise<User> {
     try {
-      const deletedUser = await prisma.user.delete({
-        where: {
-          ID: userID
-        }
-      })
-
-      return deletedUser
+      const userDeleted: User = await this.prisma.user.delete({ where })
+      return userDeleted
     } catch (error: any) {
-      throw new Error(error)
+      throw error
     }
   }
 }
