@@ -30,6 +30,7 @@ export class UsersService {
       const userCreated: User = await this.prisma.user.create({ data })
       return userCreated
     } catch (error: any) {
+      console.log(error)
       throw error
     }
   }
