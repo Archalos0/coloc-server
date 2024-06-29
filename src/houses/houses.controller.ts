@@ -4,11 +4,12 @@ import { CreateHouseDto } from './dto/create-house.dto';
 import { Response } from 'express';
 import { parsingInt } from 'src/utils';
 import { UpdateHouseDto } from './dto/update-house.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 
 
 @ApiTags('houses')
+@ApiBearerAuth()
 @Controller('houses')
 export class HousesController {
     constructor(private housesService: HousesService) {}
@@ -17,13 +18,13 @@ export class HousesController {
     async findOneByID(@Res() res: Response, @Param('houseID') paramHouseID: any){
         try {
             const houseID: number = parsingInt(paramHouseID)
-            if(!houseID) res.status(HttpStatus.BAD_REQUEST).json({error: 'Invalid houseID'}).send()
+            if(!houseID) res.status(HttpStatus.BAD_REQUEST).json({error: 'Invalid houseID'})
 
             const user = await this.housesService.findOne({ID: houseID})
 
-            res.status(HttpStatus.OK).json({data: user}).send()
+            res.status(HttpStatus.OK).json({data: user})
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: error}).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: error})
         }
     }
 
@@ -32,9 +33,9 @@ export class HousesController {
         try {
             const users = await this.housesService.findAll()
 
-            res.status(HttpStatus.OK).json({data: users}).send()
+            res.status(HttpStatus.OK).json({data: users})
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: error}).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: error})
         }
     }
     
@@ -43,9 +44,9 @@ export class HousesController {
         try {
             //const houseCreateInput: Prisma.HouseCreateInput = createHouseDto
             const house = await this.housesService.create(createHouseDto)
-            res.status(HttpStatus.CREATED).json(house).send()
+            res.status(HttpStatus.CREATED).json(house)
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -54,15 +55,15 @@ export class HousesController {
         try {
             const houseID = parsingInt(paramHouseID)
             if(!houseID) {
-                res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid houseID' }).send()
+                res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid houseID' })
             }
 
             const occupants = await this.housesService.findAllOccupants(houseID)
 
-            res.status(HttpStatus.OK).json(occupants).send()
+            res.status(HttpStatus.OK).json(occupants)
         } catch(error: any) {
             console.log(error)
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -70,14 +71,14 @@ export class HousesController {
     async update(@Res() res: Response, @Param('houseID') paramHouseID: any, @Body() updateHouseDto: UpdateHouseDto) {
         try {
             const houseID = parsingInt(paramHouseID)
-            if(!houseID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid houseID'}).send()
+            if(!houseID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid houseID'})
             
             const houseUpdateInput: any = updateHouseDto
             const updatedHouse = await this.housesService.update({ID: houseID}, houseUpdateInput)
 
             res.status(HttpStatus.OK).json(updatedHouse).send()
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: error}).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: error})
         }
     }
 
@@ -85,16 +86,16 @@ export class HousesController {
     async delete(@Res() res: Response, @Param('houseID') paramHouseID: any) {
         try {
             const houseID = parsingInt(paramHouseID)
-            if(!houseID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalide houseID'}).send()
+            if(!houseID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalide houseID'})
         
             const deletedHouse = await this.housesService.delete({ID: houseID})
 
             res.status(HttpStatus.NO_CONTENT).send()
         } catch (error) {
             if(error.code == "P2025") 
-                res.status(HttpStatus.NOT_FOUND).json({error : 'The house does not exist'}).send()
+                res.status(HttpStatus.NOT_FOUND).json({error : 'The house does not exist'})
             else 
-                res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error).send()           
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error)        
         }
     }    
 }

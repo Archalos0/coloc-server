@@ -4,11 +4,12 @@ import { CreateBedroomDto } from './dto/create-bedroom.dto';
 import { BedroomsService } from './bedrooms.service';
 import { UpdateBedroomDto } from './dto/update-bedroom.dto';
 import { parsingInt } from 'src/utils';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 import { CreateDtoToCreatePrisma } from './bedrooms.utils';
 
 @ApiTags('bedrooms')
+@ApiBearerAuth()
 @Controller('bedrooms')
 export class BedroomsController {
     constructor(private bedroomsService: BedroomsService) { }
@@ -17,13 +18,13 @@ export class BedroomsController {
     async findOneByID(@Res() res: Response, @Param('bedroomID') paramBedroomID: any) {
         try {
             const bedroomID = parsingInt(paramBedroomID)
-            if (!bedroomID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid bedroomID' }).send()
+            if (!bedroomID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid bedroomID' })
 
             const bedroom = await this.bedroomsService.findOne({ ID: bedroomID })
 
-            res.status(HttpStatus.OK).json({ data: bedroom }).send()
+            res.status(HttpStatus.OK).json({ data: bedroom })
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error }).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error })
         }
     }
 
@@ -31,9 +32,9 @@ export class BedroomsController {
     async findAll(@Res() res: Response) {
         try {
             const bedrooms = await this.bedroomsService.findAll()
-            res.status(HttpStatus.OK).json({ data: bedrooms }).send()
+            res.status(HttpStatus.OK).json({ data: bedrooms })
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error }).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error })
         }
     }
 
@@ -45,10 +46,10 @@ export class BedroomsController {
             console.log(createdBedroom)
 
             const bedroomCreated = await this.bedroomsService.create(CreateDtoToCreatePrisma(createdBedroom))
-            res.status(HttpStatus.OK).json(bedroomCreated).send()
+            res.status(HttpStatus.OK).json(bedroomCreated)
         } catch (error: any) {
             console.log(error)
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -57,13 +58,13 @@ export class BedroomsController {
         try {
 
             const bedroomID = parsingInt(paramBedroomID)
-            if (!bedroomID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid bedroomID' }).send()
+            if (!bedroomID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid bedroomID' })
 
             const updatedBedroom = await this.bedroomsService.update({ ID: bedroomID }, updateBedroomDto)
 
-            res.status(HttpStatus.OK).json({ data: updatedBedroom }).send()
+            res.status(HttpStatus.OK).json({ data: updatedBedroom })
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error }).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error })
         }
     }
 
@@ -71,7 +72,7 @@ export class BedroomsController {
     async delete(@Res() res: Response, @Param('bedroomID') paramBedroomID: any) {
         try {
             const bedroomID = parsingInt(paramBedroomID)
-            if (!bedroomID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid bedroomID' }).send()
+            if (!bedroomID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid bedroomID' })
 
             const deletedBedroom = await this.bedroomsService.delete({ ID: bedroomID })
 

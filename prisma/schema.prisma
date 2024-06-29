@@ -23,7 +23,7 @@ enum Role {
 
 model User {
   ID          Int       @id @default(autoincrement())
-  email       String
+  email       String    @unique
   firstName   String
   password    String
   role        Role      @default(ROOMMATE)
@@ -35,12 +35,21 @@ model User {
 
   houseOwned House?   @relation(name: "HouseOwner")
   bedroom    Bedroom? @relation(name: "RentedBy")
+  token Token?
 
   // fridge          Fridge
   // private_inbox   Inbox
 
   HouseShoppingList      HouseShoppingList[]
   PersonnalShoppiingList PersonnalShoppingList[]
+}
+
+model Token {
+  ID  Int @id @default(autoincrement())
+  user User @relation(fields: [userID], references: [ID])
+  userID Int @unique
+  token String
+  createTimestamp DateTime @default(now())
 }
 
 model House {

@@ -4,7 +4,7 @@
 
 Table User {
   ID Int [pk, increment]
-  email String [not null]
+  email String [unique, not null]
   firstName String [not null]
   password String [not null]
   role Role [not null, default: 'ROOMMATE']
@@ -15,8 +15,17 @@ Table User {
   description String
   houseOwned House
   bedroom Bedroom
+  token Token
   HouseShoppingList HouseShoppingList [not null]
   PersonnalShoppiingList PersonnalShoppingList [not null]
+}
+
+Table Token {
+  ID Int [pk, increment]
+  user User [not null]
+  userID Int [unique, not null]
+  token String [not null]
+  createTimestamp DateTime [default: `now()`, not null]
 }
 
 Table House {
@@ -83,6 +92,8 @@ Enum TypeArticle {
   HOUSEHOLD_PRODUCT
   OTHER
 }
+
+Ref: Token.userID - User.ID
 
 Ref: House.ownerID - User.ID
 

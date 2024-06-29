@@ -19,6 +19,7 @@ async function bootstrap() {
     .setTitle('coloc API')
     .setDescription('API to communicate the front to the back')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api/doc', app, document, {

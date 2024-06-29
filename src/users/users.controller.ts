@@ -4,11 +4,12 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Response } from 'express';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaError, parsingInt } from 'src/utils';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Role } from 'src/utils/enum';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
     constructor(private usersService: UsersService) { }
@@ -17,25 +18,23 @@ export class UsersController {
     async findOneByID(@Res() res: Response, @Param('userID') paramUserID: any) {
         try {
             const userID: number = parsingInt(paramUserID)
-            if (!userID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid userID' }).send()
+            if (!userID) res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid userID' })
 
             const user = await this.usersService.findOne({ ID: userID })
 
-            res.status(HttpStatus.OK).json({ data: user }).send()
+            res.status(HttpStatus.OK).json({ data: user })
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error }).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error })
         }
     }
 
     @Get()
     async findAll(@Res() res: Response) {
         try {
-
             const users = await this.usersService.findAll()
-            res.status(HttpStatus.OK).json(users).send()
+            res.status(HttpStatus.OK).json(users)
         } catch (error: any) {
-            console.log(error)
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: error}).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({error: error})
         }
     }
 
@@ -44,9 +43,9 @@ export class UsersController {
         try {
             const userCreateInput: Prisma.UserCreateInput = createUserDto
             const user = await this.usersService.create(userCreateInput)
-            res.status(HttpStatus.CREATED).json(user).send()
+            res.status(HttpStatus.CREATED).json(user)
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error }).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error })
         }
     }
 
@@ -60,14 +59,14 @@ export class UsersController {
     async update(@Res() res: Response, @Param('userID') paramUserID: any, @Body() updateUserDto: Prisma.UserUpdateInput) {
         try {
             const userID = parsingInt(paramUserID)
-            if (!userID) return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid userID' }).send()
+            if (!userID) return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid userID' })
 
             const updatedUser = await this.usersService.update({ ID: userID }, updateUserDto)
 
-            res.status(HttpStatus.OK).json(updatedUser).send()
+            res.status(HttpStatus.OK).json(updatedUser)
         } catch (error: any) {
             console.log(error)
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 
@@ -81,13 +80,13 @@ export class UsersController {
     async delete(@Res() res: Response, @Param('userID') paramUserID: any) {
         try {
             const userID = parsingInt(paramUserID)
-            if (!userID) return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid userID' }).send()
+            if (!userID) return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid userID' })
 
             const deletedUser = await this.usersService.delete({ ID: userID })
 
             res.status(HttpStatus.NO_CONTENT).send()
         } catch (error: any) {
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error).send()
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(error)
         }
     }
 }
