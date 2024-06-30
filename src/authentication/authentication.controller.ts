@@ -20,6 +20,7 @@ import { UsersService } from 'src/users/users.service';
 import { Prisma } from '@prisma/client';
 import { LoginUserDto } from './dto/login.dto';
 import { Token } from './dto/result.dto';
+import { hashPassword } from './utils';
 
 const jwt = require('jsonwebtoken');
 
@@ -49,14 +50,15 @@ export class AuthenticationController {
       throw new UnauthorizedException('This email already exists in the database');
     }
 
-    //use bcrypt
+    const encryptedPassword = await hashPassword(registerUserDto.password)
+    
     const userData: Prisma.UserCreateInput = {
       email: registerUserDto.email,
-      password: registerUserDto.password,
+      password: encryptedPassword,
       firstName: '',
     };
     const userCreated = await this.userService.create(userData);
-    console.log(userCreated)
+
     return {
       access_token: await this.authenticationService.signIn(
         userCreated.email,

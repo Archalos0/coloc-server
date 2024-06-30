@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { generateToken } from './utils';
+import { checkPassword, generateToken } from './utils';
 
 @Injectable()
 export class AuthenticationService {
@@ -9,15 +9,13 @@ export class AuthenticationService {
   async signIn(email: string, pass: string): Promise<any> {
     const user = await this.userService.findOne({email: email});
     
-    if (user?.password !== pass) {
+    const isPasswordCorrect = await checkPassword(pass, user.password)
+
+    if (!isPasswordCorrect) {
       throw new UnauthorizedException('The association email/password does not match.');
     }
 
     const token = generateToken(user)
     return token;
   }
-
-  //Generate token
-
-  //refresh token
 }
