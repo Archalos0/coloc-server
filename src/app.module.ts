@@ -21,6 +21,7 @@ export class AppModule {
       .exclude(
         { path: '/auth/register', method: RequestMethod.POST },
         { path: '/auth/login', method: RequestMethod.POST },
+        { path: '/auth/signIn', method: RequestMethod.POST },
       )
       .forRoutes(''); // Remplacez 'users/create' par le chemin de votre endpoint de création d'utilisateur
   }
