@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  //previewFeatures = ["driverAdapters"] /* Si j'utilise un driver postgresql externe à prisma */  
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:1234@51.178.45.24:5432/coloc?schema=public" //env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  OWNER
+  ROOMMATE
+}
+
+model User {
+  ID          Int       @id @default(autoincrement())
+  email       String    @unique
+  firstName   String
+  password    String
+  role        Role      @default(ROOMMATE)
+  phoneNumber String?
+  lastName    String?
+  birthday    DateTime? @db.Date()
+  photo       Bytes?
+  description String?
+
+  houseOwned House?   @relation(name: "HouseOwner")
+  bedroom    Bedroom? @relation(name: "RentedBy")
+  token Token?
+
+  // fridge          Fridge
+  // private_inbox   Inbox
+
+  HouseShoppingList      HouseShoppingList[]
+  PersonnalShoppiingList PersonnalShoppingList[]
+}
+
+model Token {
+  ID  Int @id @default(autoincrement())
+  user User @relation(fields: [userID], references: [ID])
+  userID Int @unique
+  token String
+  createTimestamp DateTime @default(now())
+}
+
+model House {
+  ID Int @id @default(autoincrement())
+
+  owner   User? @relation(name: "HouseOwner", fields: [ownerID], references: [ID])
+  ownerID Int?  @unique
+
+  bedrooms          Bedroom[]           @relation(name: "BedroomOfHouse")
+  HouseShoppingList HouseShoppingList[]
+}
+
+model Bedroom {
+  ID         Int     @id @default(autoincrement())
+  price      Decimal
+  size       Decimal
+  isEquipped Boolean @default(false)
+
+  occupant   User? @relation(name: "RentedBy", fields: [occupantID], references: [ID])
+  occupantID Int?  @unique
+
+  house   House @relation(name: "BedroomOfHouse", fields: [houseID], references: [ID])
+  houseID Int
+}
+
+enum TypeArticle {
+  FOOD
+  DRINK
+  HEALTH_CARE
+  UTENSIL
+  TOOL
+  HOUSEHOLD_PRODUCT
+  OTHER
+}
+
+model HouseShoppingList {
+  ID Int @id @default(autoincrement())
+
+  house   House @relation(fields: [houseID], references: [ID])
+  houseID Int
+
+  buyer   User? @relation(fields: [buyerID], references: [ID])
+  buyerID Int?
+
+  article   ArticleToBuy @relation(fields: [articleID], references: [ID])
+  articleID Int
+}
+
+model PersonnalShoppingList {
+  ID Int @id @default(autoincrement())
+
+  buyer   User? @relation(fields: [buyerID], references: [ID])
+  buyerID Int?
+
+  article   ArticleToBuy @relation(fields: [articleID], references: [ID])
+  articleID Int
+}
+
+model ArticleToBuy {
+  ID          Int         @id @default(autoincrement())
+  type        TypeArticle @default(OTHER)
+  name        String
+  description String?
+  photo       String?
+  isBuy       Boolean     @default(false)
+  quantity    Int?
+
+  HouseShoppingList      HouseShoppingList[]
+  PersonnalShoppiingList PersonnalShoppingList[]
+}
+
+// model Article {
+//   ID   Int         @id @default(autoincrement())
+//   type TypeArticle @default(OTHER)
+//   name String
+
+//   description String?
+//   photo       String?
+// }

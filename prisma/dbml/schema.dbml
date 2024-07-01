@@ -1,0 +1,112 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  ID Int [pk, increment]
+  email String [unique, not null]
+  firstName String [not null]
+  password String [not null]
+  role Role [not null, default: 'ROOMMATE']
+  phoneNumber String
+  lastName String
+  birthday DateTime
+  photo Bytes
+  description String
+  houseOwned House
+  bedroom Bedroom
+  token Token
+  HouseShoppingList HouseShoppingList [not null]
+  PersonnalShoppiingList PersonnalShoppingList [not null]
+}
+
+Table Token {
+  ID Int [pk, increment]
+  user User [not null]
+  userID Int [unique, not null]
+  token String [not null]
+  createTimestamp DateTime [default: `now()`, not null]
+}
+
+Table House {
+  ID Int [pk, increment]
+  owner User
+  ownerID Int [unique]
+  bedrooms Bedroom [not null]
+  HouseShoppingList HouseShoppingList [not null]
+}
+
+Table Bedroom {
+  ID Int [pk, increment]
+  price Decimal [not null]
+  size Decimal [not null]
+  isEquipped Boolean [not null, default: false]
+  occupant User
+  occupantID Int [unique]
+  house House [not null]
+  houseID Int [not null]
+}
+
+Table HouseShoppingList {
+  ID Int [pk, increment]
+  house House [not null]
+  houseID Int [not null]
+  buyer User
+  buyerID Int
+  article ArticleToBuy [not null]
+  articleID Int [not null]
+}
+
+Table PersonnalShoppingList {
+  ID Int [pk, increment]
+  buyer User
+  buyerID Int
+  article ArticleToBuy [not null]
+  articleID Int [not null]
+}
+
+Table ArticleToBuy {
+  ID Int [pk, increment]
+  type TypeArticle [not null, default: 'OTHER']
+  name String [not null]
+  description String
+  photo String
+  isBuy Boolean [not null, default: false]
+  quantity Int
+  HouseShoppingList HouseShoppingList [not null]
+  PersonnalShoppiingList PersonnalShoppingList [not null]
+}
+
+Enum Role {
+  ADMIN
+  OWNER
+  ROOMMATE
+}
+
+Enum TypeArticle {
+  FOOD
+  DRINK
+  HEALTH_CARE
+  UTENSIL
+  TOOL
+  HOUSEHOLD_PRODUCT
+  OTHER
+}
+
+Ref: Token.userID - User.ID
+
+Ref: House.ownerID - User.ID
+
+Ref: Bedroom.occupantID - User.ID
+
+Ref: Bedroom.houseID > House.ID
+
+Ref: HouseShoppingList.houseID > House.ID
+
+Ref: HouseShoppingList.buyerID > User.ID
+
+Ref: HouseShoppingList.articleID > ArticleToBuy.ID
+
+Ref: PersonnalShoppingList.buyerID > User.ID
+
+Ref: PersonnalShoppingList.articleID > ArticleToBuy.ID
