@@ -17,7 +17,7 @@ import {
 import { RegisterUserDto } from './dto/register.dto';
 import { Response } from 'express';
 import { UsersService } from 'src/users/users.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { LoginUserDto } from './dto/login.dto';
 import { Token } from './dto/result.dto';
 import { hashPassword } from './utils';
@@ -45,24 +45,14 @@ export class AuthenticationController {
       throw new UnauthorizedException('Passwords are differents');
     }
 
-    const userWithSameEmail = await this.userService.findOne({email: registerUserDto.email});
-    if (userWithSameEmail != null) {
-      throw new UnauthorizedException('This email already exists in the database');
-    }
-
-    const encryptedPassword = await hashPassword(registerUserDto.password)
+    await this.authenticationService.isEmailUsed(registerUserDto.email)
+  
+    const userCreated: User = await this.authenticationService.registerUser(registerUserDto.email, registerUserDto.password)
     
-    const userData: Prisma.UserCreateInput = {
-      email: registerUserDto.email,
-      password: encryptedPassword,
-      firstName: '',
-    };
-    const userCreated = await this.userService.create(userData);
-
     return {
       access_token: await this.authenticationService.signIn(
         userCreated.email,
-        userCreated.password,
+        registerUserDto.password,
       ),
     };
   }
