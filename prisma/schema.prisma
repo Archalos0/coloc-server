@@ -41,7 +41,8 @@ model User {
   // private_inbox   Inbox
 
   HouseShoppingList      HouseShoppingList[]
-  PersonnalShoppiingList PersonnalShoppingList[]
+  PersonnalShoppingList PersonnalShoppingList[]
+  Files File[]
 }
 
 model Token {
@@ -50,6 +51,13 @@ model Token {
   userID Int @unique
   token String
   createTimestamp DateTime @default(now())
+}
+
+model File {
+  ID Int @id @default(autoincrement())
+  user User? @relation(fields: [userID], references: [ID])
+  userID Int?
+  path String
 }
 
 model House {

@@ -17,7 +17,8 @@ Table User {
   bedroom Bedroom
   token Token
   HouseShoppingList HouseShoppingList [not null]
-  PersonnalShoppiingList PersonnalShoppingList [not null]
+  PersonnalShoppingList PersonnalShoppingList [not null]
+  Files File [not null]
 }
 
 Table Token {
@@ -26,6 +27,13 @@ Table Token {
   userID Int [unique, not null]
   token String [not null]
   createTimestamp DateTime [default: `now()`, not null]
+}
+
+Table File {
+  ID Int [pk, increment]
+  user User
+  userID Int
+  path String [not null]
 }
 
 Table House {
@@ -94,6 +102,8 @@ Enum TypeArticle {
 }
 
 Ref: Token.userID - User.ID
+
+Ref: File.userID > User.ID
 
 Ref: House.ownerID - User.ID
 
