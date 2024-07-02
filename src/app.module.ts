@@ -22,7 +22,17 @@ import { RouterModule } from '@nestjs/core';
         module: UsersModule,
         children: [
           {
-            path: ':userID',
+            path: ':userID/files',
+            module: FileModule
+          }
+        ]
+      },
+      {
+        path: 'houses',
+        module: UsersModule,
+        children: [
+          {
+            path: ':houseID/files',
             module: FileModule
           }
         ]

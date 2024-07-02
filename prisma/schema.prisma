@@ -57,6 +57,7 @@ model File {
   ID Int @id @default(autoincrement())
   user User? @relation(fields: [userID], references: [ID])
   userID Int?
+  fileName String
   path String
 }
 

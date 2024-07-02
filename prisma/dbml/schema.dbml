@@ -33,6 +33,7 @@ Table File {
   ID Int [pk, increment]
   user User
   userID Int
+  fileName String [not null]
   path String [not null]
 }
 

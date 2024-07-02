@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { File as PrismaFile } from '@prisma/client';
+import { CreateFileDto } from './dto/create-file.dto';
 
 @Injectable()
 export class FilesService {
@@ -14,6 +15,18 @@ export class FilesService {
             return files
         } catch (error: any) {
             throw new InternalServerErrorException()
+        }
+    }
+
+    async saveFiles(files: CreateFileDto[]): Promise<PrismaFile[]> {
+        try {
+            const filesCreated: PrismaFile[] = await this.prisma.file.createManyAndReturn({
+                data: files
+            })
+
+            return filesCreated
+        } catch (error: any) {
+            throw new InternalServerErrorException(error)
         }
     }
 }

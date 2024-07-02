@@ -1,5 +1,5 @@
 import { ApiProperty, ApiQuery } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsNumber, IsObject, IsUrl } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsString, IsUrl } from 'class-validator';
 
 
 export class File {
@@ -12,6 +12,11 @@ export class File {
   @IsNotEmpty()
   @IsNumber()
   userID: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  fileName: string;
 
   @ApiProperty()
   @IsNotEmpty()
