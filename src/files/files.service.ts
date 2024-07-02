@@ -9,13 +9,23 @@ export class FilesService {
 
     constructor(private prisma: PrismaService) { }
 
-    async getAllUsersFiles(userID: number): Promise<PrismaFile[]> {
+    async getAllUserFiles(userID: number): Promise<PrismaFile[]> {
         try {
             const files: PrismaFile[] = await this.prisma.file.findMany({ where: { userID: userID}})
             return files
         } catch (error: any) {
             throw new InternalServerErrorException()
         }
+    }
+
+    async getAllHouseFiles(houseID: number): Promise<PrismaFile[]> {
+        // try {
+        //     const files: PrismaFile[] = await this.prisma.file.findMany({ where: { userID: userID}})
+        //     return files
+        // } catch (error: any) {
+        //     throw new InternalServerErrorException()
+        // }
+        return
     }
 
     async saveFiles(files: CreateFileDto[]): Promise<PrismaFile[]> {
