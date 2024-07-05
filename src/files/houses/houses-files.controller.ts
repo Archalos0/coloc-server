@@ -20,7 +20,7 @@ export class HousesFileController extends FileController{
     type: Files
   })
   @Get()
-  async getAllUserFiles(@Param('houseID') paramHouseID: number) {
+  async getAllFiles(@Param('houseID') paramHouseID: number) {
     const house: House = await this.housesService.findOne({ID: paramHouseID})
     if(!house) throw new BadRequestException('Invalid House ID')
     
@@ -41,14 +41,12 @@ export class HousesFileController extends FileController{
     const house: House = await this.housesService.findOne({ID: paramHouseID})
     if(!house) throw new BadRequestException('Invalid House ID')
 
-    // TODO: send the file in the sftp server (docker)
+    // TODO: send the file in the sftp server (docker) + Make it function
     
     
-    // TODO: make the good path to the file
+    // TODO: make the good path to the file + make it function
     const filesData: CreateFileDto[] = files.map(file => { return new CreateFileDto(house.ID, file.originalname, "sftp://51.178.45.24/upload/houses/" + house.ID + "/" + file.originalname)})
-    
     const filesCreated = await this.filesService.saveFiles(filesData)
-
     return {
       files: filesCreated
     }
