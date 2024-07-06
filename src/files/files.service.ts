@@ -26,13 +26,16 @@ export class FilesService {
   }
 
   async getAllHouseFiles(houseID: number): Promise<PrismaFile[]> {
-    // try {
-    //     const files: PrismaFile[] = await this.prisma.file.findMany({ where: { userID: userID}})
-    //     return files
-    // } catch (error: any) {
-    //     throw new InternalServerErrorException()
-    // }
-    return;
+    try {
+        const userFiles = await this.prisma.houseFile.findMany({
+          where: { houseID },
+          include: { file: true },
+        });
+  
+        return userFiles.map((file) => file.file);
+      } catch (error: any) {
+        throw new InternalServerErrorException();
+      }
   }
 
   async sendFiles(

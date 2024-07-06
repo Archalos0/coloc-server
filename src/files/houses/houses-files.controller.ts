@@ -16,7 +16,7 @@ export class HousesFileController extends FileController{
 
   @ApiOkResponse({
     description:
-      'All the files of the house',
+      'Get all the files of the house',
     type: Files
   })
   @Get()
