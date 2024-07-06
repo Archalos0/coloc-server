@@ -10,7 +10,7 @@ import { Prisma } from '@prisma/client';
 
 @ApiTags('houses')
 @ApiBearerAuth()
-@Controller('houses')
+@Controller()
 export class HousesController {
     constructor(private housesService: HousesService) {}
     

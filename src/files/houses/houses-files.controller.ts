@@ -16,7 +16,7 @@ export class HousesFileController extends FileController{
 
   @ApiOkResponse({
     description:
-      'All the files of the house',
+      'Return all the files of the house',
     type: Files
   })
   @Get()
@@ -30,9 +30,8 @@ export class HousesFileController extends FileController{
     }
   }
 
-  // TODO: upload files => need to have the ftp server
   @ApiCreatedResponse({
-    description: 'Upload all the files',
+    description: 'Upload all the files in the house space',
     type: Files
   })
   @Post()
@@ -41,12 +40,9 @@ export class HousesFileController extends FileController{
     const house: House = await this.housesService.findOne({ID: paramHouseID})
     if(!house) throw new BadRequestException('Invalid House ID')
 
-    // TODO: send the file in the sftp server (docker) + Make it function
-    await this.filesService.sendFiles(files, '/files/houses/' + paramHouseID + '/')
+    const filesUploaded: string[] = await this.filesService.sendFiles(files, '/files/houses/' + house.ID + '/')
+    const filesCreated: File[] = await this.filesService.createHouseFiles(house.ID, filesUploaded)
     
-    // TODO: make the good path to the file + make it function
-    const filesData: CreateFileDto[] = files.map(file => { return new CreateFileDto(house.ID, file.originalname, "sftp://51.178.45.24/upload/houses/" + house.ID + "/" + file.originalname)})
-    const filesCreated = await this.filesService.saveFiles(filesData)
     return {
       files: filesCreated
     }

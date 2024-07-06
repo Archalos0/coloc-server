@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["omitApi"]
   //previewFeatures = ["driverAdapters"] /* Si j'utilise un driver postgresql externe à prisma */  
 }
 
@@ -42,7 +43,8 @@ model User {
 
   HouseShoppingList      HouseShoppingList[]
   PersonnalShoppingList PersonnalShoppingList[]
-  Files File[]
+
+  Files UserFile[]
 }
 
 model Token {
@@ -55,10 +57,28 @@ model Token {
 
 model File {
   ID Int @id @default(autoincrement())
-  user User? @relation(fields: [userID], references: [ID])
-  userID Int?
+  users UserFile[]
+  houses HouseFile[]
   fileName String
   path String
+}
+
+model UserFile {
+  userID Int
+  fileID Int
+  user   User @relation(fields: [userID], references: [ID])
+  file   File @relation(fields: [fileID], references: [ID])
+
+  @@id([userID, fileID])
+}
+
+model HouseFile {
+  houseID Int
+  fileID Int
+  house  House @relation(fields: [houseID], references: [ID])
+  file   File @relation(fields: [fileID], references: [ID])
+
+  @@id([houseID, fileID])
 }
 
 model House {
@@ -69,6 +89,8 @@ model House {
 
   bedrooms          Bedroom[]           @relation(name: "BedroomOfHouse")
   HouseShoppingList HouseShoppingList[]
+
+  houseFiles HouseFile[]
 }
 
 model Bedroom {
