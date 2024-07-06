@@ -58,6 +58,7 @@ model Token {
 model File {
   ID Int @id @default(autoincrement())
   users UserFile[]
+  houses HouseFile[]
   fileName String
   path String
 }
@@ -71,6 +72,15 @@ model UserFile {
   @@id([userID, fileID])
 }
 
+model HouseFile {
+  houseID Int
+  fileID Int
+  house  House @relation(fields: [houseID], references: [ID])
+  file   File @relation(fields: [fileID], references: [ID])
+
+  @@id([houseID, fileID])
+}
+
 model House {
   ID Int @id @default(autoincrement())
 
@@ -79,6 +89,8 @@ model House {
 
   bedrooms          Bedroom[]           @relation(name: "BedroomOfHouse")
   HouseShoppingList HouseShoppingList[]
+
+  houseFiles HouseFile[]
 }
 
 model Bedroom {

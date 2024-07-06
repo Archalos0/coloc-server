@@ -32,6 +32,7 @@ Table Token {
 Table File {
   ID Int [pk, increment]
   users UserFile [not null]
+  houses HouseFile [not null]
   fileName String [not null]
   path String [not null]
 }
@@ -47,12 +48,24 @@ Table UserFile {
   }
 }
 
+Table HouseFile {
+  houseID Int [not null]
+  fileID Int [not null]
+  house House [not null]
+  file File [not null]
+
+  indexes {
+    (houseID, fileID) [pk]
+  }
+}
+
 Table House {
   ID Int [pk, increment]
   owner User
   ownerID Int [unique]
   bedrooms Bedroom [not null]
   HouseShoppingList HouseShoppingList [not null]
+  houseFiles HouseFile [not null]
 }
 
 Table Bedroom {
@@ -117,6 +130,10 @@ Ref: Token.userID - User.ID
 Ref: UserFile.userID > User.ID
 
 Ref: UserFile.fileID > File.ID
+
+Ref: HouseFile.houseID > House.ID
+
+Ref: HouseFile.fileID > File.ID
 
 Ref: House.ownerID - User.ID
 
