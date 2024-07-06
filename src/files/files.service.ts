@@ -134,7 +134,45 @@ export class FilesService {
         return await this.saveUserFiles(userID, filesData)
         
     } catch (error: any) {
+        throw new InternalServerErrorException('Error uploading files:');
+    }
+  }
+
+  async createHouseFiles(houseID: number, pathFiles: string[]): Promise<File[]> {
+    try {
+        const filesData: CreateFileDto[] = pathFiles.map(filePath => {
+            const fileName: string = filePath.split('/').reverse()[0]
+            return new CreateFileDto(houseID, fileName, filePath)
+        })
+
+        return await this.saveHouseFiles(houseID, filesData)
         
+    } catch (error: any) {
+        throw new InternalServerErrorException('Error uploading files:');
+    }
+  }
+
+  async saveHouseFiles(
+    houseID: number,
+    files: CreateFileDto[],
+  ): Promise<PrismaFile[]> {
+    try {
+        const filesSaved: PrismaFile[] = await this._saveFiles(files);
+
+        const userFilesToSaved = filesSaved.map((fileSaved) => {
+            return { fileID: fileSaved.ID, houseID: houseID };
+        });
+
+        const filesCreated = await this.prisma.houseFile.createManyAndReturn({
+            data: userFilesToSaved,
+            include: {
+                file: true,
+            },
+        });
+
+        return filesCreated.map((file) => file.file);
+    } catch (error: any) {
+        throw new InternalServerErrorException('Error uploading files:');
     }
   }
 }
