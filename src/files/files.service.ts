@@ -32,42 +32,47 @@ export class FilesService {
     }
 
     async sendFiles(files: Array<Express.Multer.File>, destination: string): Promise<string[]> {
-        let sftp = new Client();
-        let filesUploaded: string[]
+        const sftp = new Client();
+        const filesUploaded: string[] = []
 
-        await sftp.connect({
-            host: '51.178.45.24',
-            port: 22,
-            username: 'sftpuser',
-            password: 'q4nfH87a7e9V9UhbWBN9'
-        })
-        .then(() => {
-            return sftp.mkdir(destination, true)
-        })
-        .then(() => {
-            return sftp.list(destination)
-        })
-        .then((data: Array<SFTPFile>) => {
-            return Promise.all(files.map(file => {
-                let fileName: string = file.originalname
-                let index: number = 0
-                while(data.find(element => element.name == fileName)) {
-                    index++
-                    fileName = file.originalname + " (" + index + ")" 
-                }
-                return sftp.put(file.buffer, destination + fileName)
-            }))
-        })
-        .then((data: string[]) => {
-            filesUploaded = data.map(fileUploaded => {
-                return fileUploaded.replace('Uploaded data stream to ', '')
+        try {
+            
+            await sftp.connect({
+                host: '51.178.45.24',
+                port: 22,
+                username: 'sftpuser',
+                password: 'q4nfH87a7e9V9UhbWBN9'
             })
-        })
-        .then(
-            sftp.end()
-        )
 
-        return filesUploaded
+            await sftp.mkdir(destination, true)
+            const existingFiles = await sftp.list(destination);
+
+            for (const file of files) {
+                const fileName: string = this._namingFile(existingFiles, file)
+
+                await sftp.put(file.buffer, `${destination}${fileName}`);
+                filesUploaded.push(`${destination}${fileName}`);
+            }
+
+        } catch (error: any) {
+            throw new InternalServerErrorException('Error uploading files:')
+        }
+        finally {
+            await sftp.end();
+            return filesUploaded
+        }
+    }
+
+    _namingFile(existingFiles: Array<SFTPFile>, file: Express.Multer.File): string {
+        let fileName: string = file.originalname;
+        let index: number = 0;
+
+        while (existingFiles.find(element => element.name === fileName)) {
+          index++;
+          fileName = `${file.originalname} (${index})`;
+        }
+
+        return fileName
     }
 
     async saveFiles(files: CreateFileDto[]): Promise<PrismaFile[]> {
