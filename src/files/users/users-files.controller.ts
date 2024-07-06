@@ -30,7 +30,6 @@ export class UsersFileController extends FileController{
     }
   }
 
-  // TODO: upload files => need to have the ftp server
   @ApiCreatedResponse({
     description: 'Upload all the files in the user space',
     type: Files
@@ -42,7 +41,6 @@ export class UsersFileController extends FileController{
     if(!user) throw new BadRequestException('Invalid User ID')
 
     const filesUploaded: string[] = await this.filesService.sendFiles(files, '/files/users/' + user.ID + '/')
-   
     const filesCreated: File[] = await this.filesService.createUserFiles(user.ID, filesUploaded)
     
     return {

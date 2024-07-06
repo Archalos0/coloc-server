@@ -128,7 +128,7 @@ export class FilesService {
     try {
         const filesData: CreateFileDto[] = pathFiles.map(filePath => {
             const fileName: string = filePath.split('/').reverse()[0]
-            return new CreateFileDto(userID, fileName, filePath)
+            return new CreateFileDto(fileName, filePath)
         })
 
         return await this.saveUserFiles(userID, filesData)
@@ -142,7 +142,7 @@ export class FilesService {
     try {
         const filesData: CreateFileDto[] = pathFiles.map(filePath => {
             const fileName: string = filePath.split('/').reverse()[0]
-            return new CreateFileDto(houseID, fileName, filePath)
+            return new CreateFileDto(fileName, filePath)
         })
 
         return await this.saveHouseFiles(houseID, filesData)

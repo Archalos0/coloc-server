@@ -30,7 +30,6 @@ export class HousesFileController extends FileController{
     }
   }
 
-  // TODO: upload files => need to have the ftp server
   @ApiCreatedResponse({
     description: 'Upload all the files in the house space',
     type: Files
@@ -42,7 +41,6 @@ export class HousesFileController extends FileController{
     if(!house) throw new BadRequestException('Invalid House ID')
 
     const filesUploaded: string[] = await this.filesService.sendFiles(files, '/files/houses/' + house.ID + '/')
-    
     const filesCreated: File[] = await this.filesService.createHouseFiles(house.ID, filesUploaded)
     
     return {
