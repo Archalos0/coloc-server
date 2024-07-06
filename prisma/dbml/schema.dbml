@@ -18,7 +18,7 @@ Table User {
   token Token
   HouseShoppingList HouseShoppingList [not null]
   PersonnalShoppingList PersonnalShoppingList [not null]
-  Files File [not null]
+  Files UserFile [not null]
 }
 
 Table Token {
@@ -31,10 +31,20 @@ Table Token {
 
 Table File {
   ID Int [pk, increment]
-  user User
-  userID Int
+  users UserFile [not null]
   fileName String [not null]
   path String [not null]
+}
+
+Table UserFile {
+  userID Int [not null]
+  fileID Int [not null]
+  user User [not null]
+  file File [not null]
+
+  indexes {
+    (userID, fileID) [pk]
+  }
 }
 
 Table House {
@@ -104,7 +114,9 @@ Enum TypeArticle {
 
 Ref: Token.userID - User.ID
 
-Ref: File.userID > User.ID
+Ref: UserFile.userID > User.ID
+
+Ref: UserFile.fileID > File.ID
 
 Ref: House.ownerID - User.ID
 

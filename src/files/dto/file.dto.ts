@@ -10,11 +10,6 @@ export class File {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  userID: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   fileName: string;
 

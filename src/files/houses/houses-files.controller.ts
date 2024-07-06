@@ -46,9 +46,9 @@ export class HousesFileController extends FileController{
     
     // TODO: make the good path to the file + make it function
     const filesData: CreateFileDto[] = files.map(file => { return new CreateFileDto(house.ID, file.originalname, "sftp://51.178.45.24/upload/houses/" + house.ID + "/" + file.originalname)})
-    const filesCreated = await this.filesService.saveFiles(filesData)
+    //const filesCreated = await this.filesService.saveFiles(filesData)
     return {
-      files: filesCreated
+      files: []
     }
   }
 }

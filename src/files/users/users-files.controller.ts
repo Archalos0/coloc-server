@@ -16,7 +16,7 @@ export class UsersFileController extends FileController{
 
   @ApiOkResponse({
     description:
-      'All the files of the user',
+      'Return all the files of the user',
     type: Files
   })
   @Get()
@@ -32,7 +32,7 @@ export class UsersFileController extends FileController{
 
   // TODO: upload files => need to have the ftp server
   @ApiCreatedResponse({
-    description: 'Upload all the files',
+    description: 'Upload all the files in the user space',
     type: Files
   })
   @Post()
@@ -41,14 +41,10 @@ export class UsersFileController extends FileController{
     const user: User = await this.usersService.findOne({ID: paramUserID})
     if(!user) throw new BadRequestException('Invalid User ID')
 
-    const filesUploaded: string[] = await this.filesService.sendFiles(files, '/files/users/' + paramUserID + '/')
+    const filesUploaded: string[] = await this.filesService.sendFiles(files, '/files/users/' + user.ID + '/')
    
-    // TODO: create the file DTO from filesUploaded + make it function
-    const filesData: CreateFileDto[] = files.map(file => { 
-      return new CreateFileDto(user.ID, file.originalname, "sftp://51.178.45.24/files/users/" + user.ID + "/" + file.originalname)
-    })
-    const filesCreated = await this.filesService.saveFiles(filesData)
-
+    const filesCreated: File[] = await this.filesService.createUserFiles(user.ID, filesUploaded)
+    
     return {
       files: filesCreated
     }
