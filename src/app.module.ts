@@ -4,13 +4,42 @@ import { AppService } from './app.service';
 import { HousesModule } from './houses/houses.module';
 import { UsersModule } from './users/users.module';
 import { BedroomsModule } from './bedrooms/bedrooms.module';
-import { AuthenticationController } from './authentication/authentication.controller';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { verifyToken } from './authentication/authentication.middleware';
-import path from 'path';
+import { FileModule } from './files/files.module';
+import { RouterModule } from '@nestjs/core';
 
 @Module({
-  imports: [UsersModule, HousesModule, BedroomsModule, AuthenticationModule],
+  imports: [
+    UsersModule, 
+    HousesModule,
+    BedroomsModule,
+    AuthenticationModule,
+    FileModule,
+    RouterModule.register([
+      {
+        path: 'users',
+        module: UsersModule,
+        children: [
+          {
+            path: '', // * Defined in the \@Controller(':userID/files')
+            module: FileModule
+          }
+        ]
+      },
+      {
+        path: 'houses',
+        module: HousesModule,
+        children: [
+          {
+            path: '', // * Defined in the \@Controller(':houseID/files')
+            module: FileModule
+          }
+        ]
+      }
+    ])
+  
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

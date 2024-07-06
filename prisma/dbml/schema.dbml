@@ -17,7 +17,8 @@ Table User {
   bedroom Bedroom
   token Token
   HouseShoppingList HouseShoppingList [not null]
-  PersonnalShoppiingList PersonnalShoppingList [not null]
+  PersonnalShoppingList PersonnalShoppingList [not null]
+  Files UserFile [not null]
 }
 
 Table Token {
@@ -28,12 +29,43 @@ Table Token {
   createTimestamp DateTime [default: `now()`, not null]
 }
 
+Table File {
+  ID Int [pk, increment]
+  users UserFile [not null]
+  houses HouseFile [not null]
+  fileName String [not null]
+  path String [not null]
+}
+
+Table UserFile {
+  userID Int [not null]
+  fileID Int [not null]
+  user User [not null]
+  file File [not null]
+
+  indexes {
+    (userID, fileID) [pk]
+  }
+}
+
+Table HouseFile {
+  houseID Int [not null]
+  fileID Int [not null]
+  house House [not null]
+  file File [not null]
+
+  indexes {
+    (houseID, fileID) [pk]
+  }
+}
+
 Table House {
   ID Int [pk, increment]
   owner User
   ownerID Int [unique]
   bedrooms Bedroom [not null]
   HouseShoppingList HouseShoppingList [not null]
+  houseFiles HouseFile [not null]
 }
 
 Table Bedroom {
@@ -94,6 +126,14 @@ Enum TypeArticle {
 }
 
 Ref: Token.userID - User.ID
+
+Ref: UserFile.userID > User.ID
+
+Ref: UserFile.fileID > File.ID
+
+Ref: HouseFile.houseID > House.ID
+
+Ref: HouseFile.fileID > File.ID
 
 Ref: House.ownerID - User.ID
 
