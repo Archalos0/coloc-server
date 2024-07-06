@@ -42,7 +42,7 @@ export class HousesFileController extends FileController{
     if(!house) throw new BadRequestException('Invalid House ID')
 
     // TODO: send the file in the sftp server (docker) + Make it function
-    
+    await this.filesService.sendFiles(files, '/files/houses/' + paramHouseID + '/')
     
     // TODO: make the good path to the file + make it function
     const filesData: CreateFileDto[] = files.map(file => { return new CreateFileDto(house.ID, file.originalname, "sftp://51.178.45.24/upload/houses/" + house.ID + "/" + file.originalname)})

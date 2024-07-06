@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { File as PrismaFile } from '@prisma/client';
 import { CreateFileDto } from './dto/create-file.dto';
+import { SFTPFile } from './dto/sftp-file.dto';
 
 const Client = require('ssh2-sftp-client');
 
@@ -30,10 +31,11 @@ export class FilesService {
         return
     }
 
-    async sendFiles(files: Array<Express.Multer.File>, destination: string) {
+    async sendFiles(files: Array<Express.Multer.File>, destination: string): Promise<string[]> {
         let sftp = new Client();
-        
-        sftp.connect({
+        let filesUploaded: string[]
+
+        await sftp.connect({
             host: '51.178.45.24',
             port: 22,
             username: 'sftpuser',
@@ -43,17 +45,34 @@ export class FilesService {
             return sftp.mkdir(destination, true)
         })
         .then(() => {
-            files.map(file => {
-                sftp.put(file.buffer, destination + file.originalname)
+            return sftp.list(destination)
+        })
+        .then((data: Array<SFTPFile>) => {
+            return Promise.all(files.map(file => {
+                let fileName: string = file.originalname
+                let index: number = 0
+                while(data.find(element => element.name == fileName)) {
+                    index++
+                    fileName = file.originalname + " (" + index + ")" 
+                }
+                return sftp.put(file.buffer, destination + fileName)
+            }))
+        })
+        .then((data: string[]) => {
+            filesUploaded = data.map(fileUploaded => {
+                return fileUploaded.replace('Uploaded data stream to ', '')
             })
         })
         .then(
             sftp.end()
         )
+
+        return filesUploaded
     }
 
     async saveFiles(files: CreateFileDto[]): Promise<PrismaFile[]> {
         try {
+            console.log(files)
             const filesCreated: PrismaFile[] = await this.prisma.file.createManyAndReturn({
                 data: files
             })

@@ -15,7 +15,7 @@ export abstract class FileController {
    * @param id is the id of the data manipulated
    **   - has to be decorated by : \@Param('\<id\>') : where \<id\> is the name of the variable you put on the route
   */ 
-  abstract getAllFiles(id: number): Promise<{files : File[]}>;
+  abstract getAllFiles(id: number): Promise<Files>;
 
   /**
    ** This method should be decorated by :
