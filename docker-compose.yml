@@ -2,24 +2,24 @@ version: '3.9'
 
 services:
 
-  # db:
-  #   image: postgres
-  #   restart: always
-  #   container_name: coloc_db
-  #   shm_size: 128mb
-  #   environment:
-  #     POSTGRES_USER: ${DB_USER}
-  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
-  #     POSTGRES_DB: ${DB_NAME}
+  db:
+    image: postgres
+    restart: always
+    container_name: coloc_db
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
 
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   container_name: coloc-pg-adminer
-  #   ports:
-  #     - 8080:8080
-  #   depends_on:
-  #     - db
+  adminer:
+    image: adminer
+    restart: always
+    container_name: coloc-pg-adminer
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
 
   api:
     build:
@@ -35,7 +35,7 @@ services:
       DB_URL: ${DB_URL}
     ports:
       - '3000:3000'
-    # depends_on:
-    #   - db
+    depends_on:
+      - db
     volumes:
       - ./src:/app/src
