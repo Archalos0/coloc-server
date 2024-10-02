@@ -3,8 +3,24 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+
+  // const keyFile  = fs.readFileSync('/app/cert/key.pem');
+  // const certFile = fs.readFileSync('/app/cert/cert.pem');
+ 
+  // const httpsOptions = {
+  //   key: fs.readFileSync(keyFile),
+  //   cert: fs.readFileSync(certFile),
+  // };
+
+  const app = await NestFactory.create(AppModule,
+    // {
+    //   httpsOptions
+    // }
+  );
 
   app.setGlobalPrefix('api');
   app.useGlobalPipes(

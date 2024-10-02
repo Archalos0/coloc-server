@@ -39,3 +39,4 @@ services:
       - db
     volumes:
       - ./src:/app/src
+      # - /etc/letsencrypt/live/tanguyblondinprog.ovh:/app/cert:ro
