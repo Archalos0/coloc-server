@@ -13,7 +13,7 @@ generator dbml {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DB_URL") // "postgresql://postgres:1234@51.178.45.24:5432/coloc?schema=public"
+  url      = env("DB_URL")
 }
 
 enum Role {

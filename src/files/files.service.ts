@@ -46,6 +46,7 @@ export class FilesService {
     const filesUploaded: string[] = [];
 
     try {
+      // TODO: Change connection
       await sftp.connect({
         host: '51.178.45.24',
         port: 22,
